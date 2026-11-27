@@ -96,9 +96,9 @@ $env:LEAK_DEMO_LEAK = "/api/mini/support/tickets"
 python -m pytest "tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]" -q
 # 预期 1 failed，失败文本形如：
 #   LEAK_DETECTED route=/api/mini/support/tickets hits=3
-#     key_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
-#     value_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
-#     value_numeric_run: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
+#     key_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
+#     value_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
+#     value_numeric_run: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
 python -m scripts.build_report            # 该接口两行在报告里记为 LEAK
 Remove-Item Env:LEAK_DEMO_LEAK; Remove-Item Env:LEAK_DEMO_ALLOW
 ```

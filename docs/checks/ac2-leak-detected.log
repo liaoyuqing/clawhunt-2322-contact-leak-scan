@@ -1,4 +1,4 @@
-# AC2 演示：人为让 /api/mini/support/tickets 返回虚构手机号 13800138000，扫描必须失败
+# AC2 演示：人为让 /api/mini/support/tickets 返回一个虚构手机号，扫描必须失败
 # 失败文本里必须同时出现接口路径（path=）与字段路径（field=）。
 # 同样受两道闸约束：需 LEAK_DEMO_ALLOW=1，且 CI 环境下不生效。
 # 复现命令（PowerShell）：
@@ -14,7 +14,7 @@ F                                                                        [100%]
 ================================== FAILURES ===================================
 ___ test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member] ___
 
-app = <fastapi.applications.FastAPI object at 0x0000022337705450>
+app = <fastapi.applications.FastAPI object at 0x000001FDA58727D0>
 method = 'GET', template = '/api/mini/support/tickets', identity = 'member'
 
     @pytest.mark.parametrize("method,template,identity", _matrix(__import__("app.main", fromlist=["create_app"]).create_app()))
@@ -38,7 +38,7 @@ method = 'GET', template = '/api/mini/support/tickets', identity = 'member'
 tests\test_api_surface.py:55: 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-self = ScanResult(route='/api/mini/support/tickets', hits=[Hit(route='/api/mini/support/tickets', field_path='data.items[0].c...ield_path='data.items[0].contact_phone', kind='value_numeric_run', value='13800138000')], allowed=[], scanned_nodes=16)
+self = ScanResult(route='/api/mini/support/tickets', hits=[Hit(route='/api/mini/support/tickets', field_path='data.items[0].c...i/support/tickets', field_path='data.items[0].contact_phone', kind='value_numeric_run')], allowed=[], scanned_nodes=16)
 
     def raise_for_leak(self) -> None:
         if self.hits:
@@ -46,14 +46,14 @@ self = ScanResult(route='/api/mini/support/tickets', hits=[Hit(route='/api/mini/
             lines.extend("  " + str(hit) for hit in self.hits)
 >           raise AssertionError("\n".join(lines))
 E           AssertionError: LEAK_DETECTED route=/api/mini/support/tickets hits=3
-E             key_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
-E             value_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
-E             value_numeric_run: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
+E             key_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
+E             value_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
+E             value_numeric_run: path=/api/mini/support/tickets field=data.items[0].contact_phone value=<redacted:11 chars>
 
-scan\leak_check.py:88: AssertionError
+scan\leak_check.py:98: AssertionError
 =========================== short test summary info ===========================
 FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]
-1 failed in 0.34s
+1 failed in 0.27s
 EXIT_CODE=1
 
 ===== 2) 注入后重建报告，该接口两行应记为 LEAK =====

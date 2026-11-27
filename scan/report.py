@@ -160,7 +160,7 @@ def render_markdown(report: Report) -> str:
     lines += ["", "### 本次运行实际命中白名单的字段", "", "| 路由模板 | 字段路径 | 值 | 原因 |", "| --- | --- | --- | --- |"]
     if report.allow_hits:
         for hit in report.allow_hits:
-            lines.append(f"| `{hit.route}` | `{hit.field_path}` | `{hit.value}` | {hit.reason} |")
+            lines.append(f"| `{hit.route}` | `{hit.field_path}` | `{hit.masked}` | {hit.reason} |")
     else:
         lines.append("| - | - | - | 本次运行没有字段命中白名单（票号字段未出现在被扫响应里时属正常） |")
     lines += [

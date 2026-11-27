@@ -90,7 +90,7 @@ def capture_ac1() -> list[str]:
 
 def capture_ac2() -> list[str]:
     out = [
-        "# AC2 演示：人为让 " + LEAK_ROUTE + " 返回虚构手机号 13800138000，扫描必须失败",
+        "# AC2 演示：人为让 " + LEAK_ROUTE + " 返回一个虚构手机号，扫描必须失败",
         "# 失败文本里必须同时出现接口路径（path=）与字段路径（field=）。",
         "# 同样受两道闸约束：需 LEAK_DEMO_ALLOW=1，且 CI 环境下不生效。",
         "# 复现命令（PowerShell）：",

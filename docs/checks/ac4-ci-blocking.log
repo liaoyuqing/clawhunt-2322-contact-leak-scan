@@ -57,11 +57,11 @@ check_registry_exit=0
 FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]
 FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-staff]
 FAILED tests/test_report_shape.py::test_no_leak_rows_in_baseline - AssertionE...
-5 failed, 178 passed in 4.00s
+5 failed, 179 passed in 3.14s
 pytest_exit=1
 => step 失败 -> job leak-scan 失败 -> PR 必过检查不满足，合并按钮禁用
 
 ===== 4) 恢复基线后同样命令，退出码必须为 0 =====
 check_registry_exit=0
-183 passed in 3.25s
+184 passed in 2.69s
 pytest_exit=0

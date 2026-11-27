@@ -52,6 +52,7 @@ def test_key_blacklist_is_case_insensitive():
         ("****1111", "value_masked_tail"),
         ("138****", "value_masked_head"),
     ],
+    ids=["phone", "landline", "email", "wxid", "masked", "tail", "head"],
 )
 def test_value_rules_hit(value, kind):
     assert value_kind(value) == kind

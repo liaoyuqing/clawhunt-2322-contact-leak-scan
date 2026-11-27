@@ -96,15 +96,15 @@
 
 | 路由模板 | 字段路径 | 值 | 原因 |
 | --- | --- | --- | --- |
-| `/api/mini/privacy/deletion` | `data.request_id` | `del-20261127-0001` | 注销申请单号：del- 前缀 + 日期 + 4 位序号，纯业务标识 |
-| `/api/mini/privacy/export` | `data.export_id` | `exp-20261127-0001` | 个人信息导出凭据编号：exp- 前缀 + 日期 + 4 位序号，纯业务标识 |
-| `/api/mini/privacy/export` | `data.export_id` | `exp-20261127-0001` | 个人信息导出凭据编号：exp- 前缀 + 日期 + 4 位序号，纯业务标识 |
-| `/api/mini/tickets` | `data.items[0].ticket_no` | `2026112700001234` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
-| `/api/mini/tickets` | `data.items[1].ticket_no` | `2026112700005678` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
-| `/api/mini/tickets` | `data.items[0].ticket_no` | `2026112700001234` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
-| `/api/mini/tickets` | `data.items[1].ticket_no` | `2026112700005678` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
-| `/api/mini/tickets/{ticket_key}` | `data.ticket_no` | `2026112700001234` | 电子票票号（详情接口同源同格式） |
-| `/api/mini/tickets/{ticket_key}` | `data.ticket_no` | `2026112700001234` | 电子票票号（详情接口同源同格式） |
+| `/api/mini/privacy/deletion` | `data.request_id` | `del-……（共 17 字符）` | 注销申请单号：del- 前缀 + 日期 + 4 位序号，纯业务标识 |
+| `/api/mini/privacy/export` | `data.export_id` | `exp-……（共 17 字符）` | 个人信息导出凭据编号：exp- 前缀 + 日期 + 4 位序号，纯业务标识 |
+| `/api/mini/privacy/export` | `data.export_id` | `exp-……（共 17 字符）` | 个人信息导出凭据编号：exp- 前缀 + 日期 + 4 位序号，纯业务标识 |
+| `/api/mini/tickets` | `data.items[0].ticket_no` | `2026……（共 16 字符）` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
+| `/api/mini/tickets` | `data.items[1].ticket_no` | `2026……（共 16 字符）` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
+| `/api/mini/tickets` | `data.items[0].ticket_no` | `2026……（共 16 字符）` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
+| `/api/mini/tickets` | `data.items[1].ticket_no` | `2026……（共 16 字符）` | 电子票票号：16 位纯数字，签发时生成，不含任何手机号片段 |
+| `/api/mini/tickets/{ticket_key}` | `data.ticket_no` | `2026……（共 16 字符）` | 电子票票号（详情接口同源同格式） |
+| `/api/mini/tickets/{ticket_key}` | `data.ticket_no` | `2026……（共 16 字符）` | 电子票票号（详情接口同源同格式） |
 
 ## 判定口径
 

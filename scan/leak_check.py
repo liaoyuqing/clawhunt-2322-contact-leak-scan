@@ -53,23 +53,33 @@ class Hit:
     route: str
     field_path: str
     kind: str
-    value: str
+    value: str = field(repr=False)   # dataclass repr 里也不出现原值，否则异常链会把它带进日志
+
+    @property
+    def masked(self) -> str:
+        # 日志与报告里一律不落原始值：命中本身已足够定位问题，
+        # 把号码原样写进 CI 日志等于二次外泄。只留长度与类型。
+        return "<redacted:{} chars>".format(len(self.value))
 
     def as_dict(self) -> dict:
-        return {"route": self.route, "field_path": self.field_path, "kind": self.kind, "value": self.value}
+        return {"route": self.route, "field_path": self.field_path, "kind": self.kind, "value": self.masked}
 
     def __str__(self) -> str:
-        return f"{self.kind}: path={self.route} field={self.field_path} value={self.value!r}"
+        return "{}: path={} field={} value={}".format(self.kind, self.route, self.field_path, self.masked)
 
 
 @dataclass
 class AllowHit:
     route: str
     field_path: str
-    value: str
+    value: str = field(repr=False)   # dataclass repr 里也不出现原值，否则异常链会把它带进日志
     reason: str
 
-
+    @property
+    def masked(self) -> str:
+        # 报告里也不落原值：只留前 4 位与总长度，够核对是哪个字段、哪类号码。
+        head = self.value[:4]
+        return "{}……（共 {} 字符）".format(head, len(self.value))
 @dataclass
 class ScanResult:
     route: str

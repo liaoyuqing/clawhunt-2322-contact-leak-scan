@@ -78,6 +78,7 @@ def test_field_path_points_at_the_json_leaf(client):
         ("wxid_probe0001", "value_wxid"),
         ("021-12345678", "value_landline"),
     ],
+    ids=["phone", "masked", "tail", "email", "wxid", "landline"],
 )
 def test_each_leak_kind_is_caught(client, value, kind):
     body = {"data": {"items": [{"ticket_id": "st-1001", "note": value}]}}
@@ -96,3 +97,16 @@ def test_override_is_cleared_between_tests(client):
     payload, result = _scan(client)
     assert result.ok
     assert injection.active() == {}
+
+
+def test_failure_message_never_prints_the_raw_value(client):
+    """泄露值不能落进日志与报告：命中已足够定位，原样打印等于二次外泄。"""
+    raw = "13800138000"
+    injection.register(TARGET_ROUTE, _leaky_body(raw))
+    _, result = _scan(client)
+    with pytest.raises(AssertionError) as excinfo:
+        result.raise_for_leak()
+    message = str(excinfo.value)
+    assert raw not in message, "失败文本不能带原始号码"
+    assert "redacted" in message, "应给出遮蔽后的占位说明"
+    assert result.hits[0].as_dict()["value"] != raw

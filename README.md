@@ -15,7 +15,7 @@
 | 依赖包 | fastapi 0.136.1、httpx 0.28.1、pydantic 2.14.4、pytest 9.2.0（见 `requirements.txt`） |
 | 数据库 | 不需要。接口桩只读 `fixtures/dataset.json` |
 | 网络 | 不需要。测试全程走 FastAPI TestClient，不起端口、不连外网 |
-| 环境变量 | 不需要。凭证类配置一律不落地；两个演示开关见第六节 |
+| 环境变量 | 不需要。凭证类配置一律不落地；两个演示开关（含两道闸）见第六节 |
 
 安装与自检（逐条命令 + 预期输出）：
 
@@ -29,7 +29,7 @@ python -m scripts.check_registry
 # 预期：逐行打印 11 个前缀各自的接口数，末行 registry_ok=true
 
 python -m pytest tests/ -q
-# 预期末行：173 passed
+# 预期末行：183 passed
 
 python -m scripts.build_report
 # 预期：templates=28 endpoints=29 rows=58 leaks=0 allowlisted=9
@@ -45,14 +45,14 @@ app/            接口桩：11 个路由前缀，全部返回虚构数据（可�
   routes/       每个前缀一个 APIRouter
   redact.py     接口桩侧的出参脱敏（自由文本里的联系方式样例替换为固定遮蔽串）
   identity.py   身份解析：会员 / 员工（对接点是换掉这个函数）
-  demo_hooks.py 演示开关：只用环境变量触发，用于 AC1 / AC2 的日志取证
+  demo_hooks.py 演示开关：只用环境变量触发，含两道闸（显式放行 + 非 CI），用于 AC1 / AC2 的日志取证
 scan/           扫描器
   enumerate.py  从 app.routes 反射枚举 11 个前缀下的全部路由模板
   registry.py   显式登记表：路由模板 -> 用例标识
   leak_check.py 键名黑名单 + 值正则 + 掩码 + 白名单 + 递归限制
   whitelist.py  数字串白名单（票号等必须返回的号码）
   report.py     生成 reports/report.md（接口 × 身份 全量矩阵）
-tests/          173 条用例
+tests/          183 条用例，八个测试文件
 fixtures/       虚构植入数据集
 .github/workflows/leak-scan.yml   CI 门禁
 docs/checks/    四类运行日志（AC1–AC4 各一份）
@@ -75,10 +75,11 @@ docs/checks/    四类运行日志（AC1–AC4 各一份）
 
 ```bash
 # PowerShell
+$env:LEAK_DEMO_ALLOW = "1"                                     # 闸一：显式放行
 $env:LEAK_DEMO_EXTRA_ROUTE = "/api/mini/events/__leak_probe"
 python -m scripts.check_registry          # 退出码 1，末行 UNDECLARED_ENDPOINT: /api/mini/events/__leak_probe
 python -m pytest tests/test_api_surface.py::test_every_template_is_registered -q   # 1 failed
-Remove-Item Env:LEAK_DEMO_EXTRA_ROUTE     # 恢复基线
+Remove-Item Env:LEAK_DEMO_EXTRA_ROUTE; Remove-Item Env:LEAK_DEMO_ALLOW   # 恢复基线
 python -m pytest tests/test_api_surface.py::test_every_template_is_registered -q   # 1 passed
 ```
 
@@ -90,6 +91,7 @@ python -m pytest tests/test_api_surface.py::test_every_template_is_registered -q
 ### AC2 人为让任一接口返回虚构手机号时测试失败，并输出接口路径与字段路径
 
 ```bash
+$env:LEAK_DEMO_ALLOW = "1"                                     # 闸一：显式放行
 $env:LEAK_DEMO_LEAK = "/api/mini/support/tickets"
 python -m pytest "tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]" -q
 # 预期 1 failed，失败文本形如：
@@ -98,7 +100,7 @@ python -m pytest "tests/test_api_surface.py::test_endpoint_has_no_contact_leak[G
 #     value_phone: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
 #     value_numeric_run: path=/api/mini/support/tickets field=data.items[0].contact_phone value='13800138000'
 python -m scripts.build_report            # 该接口两行在报告里记为 LEAK
-Remove-Item Env:LEAK_DEMO_LEAK
+Remove-Item Env:LEAK_DEMO_LEAK; Remove-Item Env:LEAK_DEMO_ALLOW
 ```
 
 应看到：`path=` 后面是接口路径，`field=` 后面是精确到 JSON 层级的字段路径（`data.items[0].contact_phone`）；
@@ -217,10 +219,13 @@ jobs:
 
 | 环境变量 | 作用 | 默认 |
 | --- | --- | --- |
+| `LEAK_DEMO_ALLOW` | 闸一：必须逐字为 `1`，否则下面两个变量一律不生效 | 空（关闭） |
 | `LEAK_DEMO_EXTRA_ROUTE` | 往 app 里再挂一条未登记路由，演示漏登记会让测试变红 | 空（不挂） |
 | `LEAK_DEMO_LEAK` | 让该路由返回带虚构手机号的响应，演示泄露会让测试变红 | 空（不注入） |
 
-两个开关都只从环境变量读，CI 不设，因此 CI 上恒为真实基线。
+闸二：`CI` 为 `1` / `true` / `yes` 时一律拒绝激活，哪怕前两个变量都设了。所以这套开关带不进 CI，CI 上恒为真实基线。
+
+`app/demo_hooks.py` 的 `demo_enabled()` 是这两道闸的唯一实现，`tests/test_demo_hooks.py` 的 10 条用例守着它（默认关、单设等不生效、两闸齐开才生效、CI 一律拒、放行值必须逐字为 1、默认 app 路由表里没有探针路由）。
 
 ## 七、测试分布
 
@@ -233,8 +238,9 @@ jobs:
 | `tests/test_report_shape.py` | AC3：行数算术、双身份、受限接口不省略、四列结构 |
 | `tests/test_ci_config.py` | AC4：yml 断言 PR 触发、跑 pytest、无 continue-on-error |
 | `tests/test_identity_and_routes.py` | 身份矩阵、未知身份 400、脱敏后正文 |
+| `tests/test_demo_hooks.py` | 演示开关两道闸：默认关、CI 拒绝、放行值逐字匹配 |
 
-实测：**173 passed**（`docs/checks/pytest-full.log` 末行）。
+实测：**183 passed**
 
 ## 八、对接点（换成客户自己的实现）
 

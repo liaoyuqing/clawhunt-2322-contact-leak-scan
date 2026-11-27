@@ -32,7 +32,10 @@ python -m pytest tests/ -q
 # 预期末行：173 passed
 
 python -m scripts.build_report
-# 预期：interfaces=28 rows=58 leaks=0 allowlisted=9
+# 预期：templates=28 endpoints=29 rows=58 leaks=0 allowlisted=9
+
+python -m scripts.capture_checks
+# 预期：重采集 docs/checks/ 下 6 份日志，末行 pytest_exit=0 report_exit=0
 ```
 
 ## 二、这套扫描器怎么工作
@@ -106,7 +109,7 @@ Remove-Item Env:LEAK_DEMO_LEAK
 
 ```bash
 python -m scripts.build_report
-# 预期：interfaces=28 rows=58 leaks=0 allowlisted=9
+# 预期：templates=28 endpoints=29 rows=58 leaks=0 allowlisted=9
 ```
 
 `reports/report.md` 的结果表列：接口 / 方法 / 身份 / 结果 / 命中字段路径。
@@ -114,8 +117,8 @@ python -m scripts.build_report
 身份受限的接口（例如 `/api/mini/me/profile` 只有会员能看）**照样保留两行**，
 员工那一行写 `NOT_ALLOWED`，不省略，否则行数算术就没有意义。
 
-应看到：29 个接口 × 2 身份 = 58 行；逐接口核对每个接口恰好 `member,staff` 各一行。
-证据文件：`docs/checks/ac3-report-shape.log`（行数统计 + 29 行逐接口核对结果）。
+应看到：29 个接口 × 2 身份 = 58 行；逐接口核对，29 个接口全部 `member,staff` 各一行（每行末尾标 OK）。
+证据文件：`docs/checks/ac3-report-shape.log`（行数统计 + 29 个接口的逐条核对结果）。
 
 ### AC4 CI 配置中该测试失败会阻断合并
 
@@ -256,4 +259,5 @@ jobs:
 | `docs/checks/ac3-report-shape.log` | AC3 日志（行数统计 + 逐接口双身份核对） |
 | `docs/checks/ac4-ci-blocking.log` | AC4 日志（yml 关键行 + 本地退出码红绿） |
 | `docs/checks/pytest-full.log` | 全量测试输出 |
+
 

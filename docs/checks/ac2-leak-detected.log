@@ -1,15 +1,17 @@
-﻿# AC2 演示：人为让 /api/mini/support/tickets 返回虚构手机号 13800138000，扫描必须失败
+# AC2 演示：人为让 /api/mini/support/tickets 返回虚构手机号 13800138000，扫描必须失败
+# 失败文本里必须同时出现接口路径（path=）与字段路径（field=）。
 # 复现命令（PowerShell）：
-#   $env:LEAK_DEMO_LEAK = '/api/mini/support/tickets'
-#   python -m pytest "tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]" -q
-#   Remove-Item Env:LEAK_DEMO_LEAK   # 恢复基线
+#   $env:LEAK_DEMO_LEAK = "/api/mini/support/tickets"
+#   python -m pytest tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member] -q
+#   python -m scripts.build_report
+#   Remove-Item Env:LEAK_DEMO_LEAK
 
-===== 1) 注入后跑目标接口（应失败，并打印接口路径与字段路径） =====
+===== 1) 注入后跑目标接口（应失败） =====
 F                                                                        [100%]
 ================================== FAILURES ===================================
 ___ test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member] ___
 
-app = <fastapi.applications.FastAPI object at 0x000002206CE327D0>
+app = <fastapi.applications.FastAPI object at 0x0000026368FE3DD0>
 method = 'GET', template = '/api/mini/support/tickets', identity = 'member'
 
     @pytest.mark.parametrize("method,template,identity", _matrix(__import__("app.main", fromlist=["create_app"]).create_app()))
@@ -22,10 +24,10 @@ method = 'GET', template = '/api/mini/support/tickets', identity = 'member'
             json=BODIES.get((method, template)),
         )
         if response.status_code in (401, 403):
-            # ��ݲ�������ʣ���һ���ڱ������Ϊ NOT_ALLOWED��������й¶�ж�
+            # ���ݲ��������ʣ���һ���ڱ������Ϊ NOT_ALLOWED��������й¶�ж�
             assert response.status_code == 403
             return
-        assert response.status_code < 400, f"{method} {template} �� {identity} ��ݷ��� {response.status_code}"
+        assert response.status_code < 400, f"{method} {template} �� {identity} ���ݷ��� {response.status_code}"
         payload = response.json()
         result = scan_payload(payload, route=template)
 >       result.raise_for_leak()
@@ -48,25 +50,21 @@ E             value_numeric_run: path=/api/mini/support/tickets field=data.items
 scan\leak_check.py:88: AssertionError
 =========================== short test summary info ===========================
 FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]
-1 failed in 0.24s
-
+1 failed in 0.23s
 EXIT_CODE=1
 
 ===== 2) 注入后重建报告，该接口两行应记为 LEAK =====
-interfaces=28 rows=58 leaks=2 allowlisted=9
-written: E:\AI�ӵ�\Clawhunt\delivery\work\2322\repo\reports\report.md
-
+templates=28 endpoints=29 rows=58 leaks=2 allowlisted=9
+written: report.md
 EXIT_CODE=1
+===== 报告里该接口的行 =====
 | `/api/mini/support/tickets` | GET | member | LEAK | `data.items[0].contact_phone` |
 | `/api/mini/support/tickets` | GET | staff | LEAK | `data.items[0].contact_phone` |
 
-
-===== 3) 恢复基线后同一命令应通过，报告恢复 0 泄露 =====
+===== 3) 恢复基线后同一命令（应通过，报告回到 0 泄露） =====
 .                                                                        [100%]
 1 passed in 0.06s
-
 EXIT_CODE=0
-interfaces=28 rows=58 leaks=0 allowlisted=9
-written: E:\AI�ӵ�\Clawhunt\delivery\work\2322\repo\reports\report.md
-
+templates=28 endpoints=29 rows=58 leaks=0 allowlisted=9
+written: report.md
 EXIT_CODE=0

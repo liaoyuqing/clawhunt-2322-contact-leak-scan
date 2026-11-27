@@ -1,4 +1,4 @@
-﻿============================= test session starts =============================
+============================= test session starts =============================
 platform win32 -- Python 3.11.9, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\Administrator\.venvs\hf-bgm\Scripts\python.exe
 cachedir: .pytest_cache
 rootdir: E:\AI�ӵ�\Clawhunt\delivery\work\2322\repo
@@ -180,4 +180,4 @@ tests/test_report_shape.py::test_markdown_has_four_result_columns PASSED [ 98%]
 tests/test_report_shape.py::test_markdown_lists_allowlist_rules PASSED   [ 99%]
 tests/test_report_shape.py::test_summary_line_reports_totals PASSED      [100%]
 
-============================= 173 passed in 2.91s =============================
+============================= 173 passed in 2.60s =============================

@@ -1,7 +1,7 @@
-﻿# AC4 证据：CI 配置中该测试失败会阻断合并
-# （1）配置文件关键行；（2）在本地按 CI 的同样命令序列复跑，证明退出码会变成非 0
+# AC4 证据：CI 配置中该测试失败会阻断合并
+# （1）工作流全文与关键行计数；（2）本地按 CI 同样的事件序列复跑，证明退出码会变成非 0
 
-===== 1) 工作流关键行（.github/workflows/leak-scan.yml） =====
+===== 1) .github/workflows/leak-scan.yml 全文 =====
 name: leak-scan
 
 on:
@@ -46,20 +46,22 @@ jobs:
             reports/report.md
             docs/checks/
 
-
-===== 2) 关键断言 grep =====
+===== 2) 关键断言 =====
 pull_request_trigger=True
-pytest_step=1
-continue_on_error_occurrences=0
+pytest_step_count=1
+continue_on_error_count=0
+exit_code_swallow_count=0
 
-===== 3) 本地模拟 CI 步骤：注入一条泄露后跑同一命令，退出码必须非 0 =====
+===== 3) 模拟 CI 步骤：注入一条泄露后跑同一命令，退出码必须非 0 =====
 check_registry_exit=0
+FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-member]
 FAILED tests/test_api_surface.py::test_endpoint_has_no_contact_leak[GET-/api/mini/support/tickets-staff]
 FAILED tests/test_report_shape.py::test_no_leak_rows_in_baseline - AssertionE...
-5 failed, 168 passed in 2.68s
-pytest_exit=1  -> GitHub Actions 该 step 失败，job 失败，PR 的必过检查不满足，合并按钮被禁用
+5 failed, 168 passed in 3.30s
+pytest_exit=1
+=> step 失败 -> job leak-scan 失败 -> PR 必过检查不满足，合并按钮禁用
 
 ===== 4) 恢复基线后同样命令，退出码必须为 0 =====
 check_registry_exit=0
-173 passed in 2.47s
+173 passed in 3.78s
 pytest_exit=0

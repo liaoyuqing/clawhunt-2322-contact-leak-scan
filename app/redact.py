@@ -1,4 +1,4 @@
-"""接口桩侧的出参脱敏：把自由文本里的联系方式样例替换成固定占位串。
+﻿"""接口桩侧的出参脱敏：把自由文本里的联系方式样例替换成固定遮蔽串。
 
 该模块只服务于接口桩本身（把虚构数据集里的联系方式样例裁掉），
 扫描器 scan/leak_check.py 有自己独立的一套判定正则，二者不共用同一份实现，
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-PLACEHOLDER = "【联系方式已隐藏】"
+MASK_TEXT = "【联系方式已隐藏】"
 
 _PATTERNS = (
     re.compile(r"1[3-9]\d{9}"),            # 11 位大陆手机号
@@ -21,7 +21,7 @@ _PATTERNS = (
 
 
 def redact_text(text: str) -> str:
-    """把自由文本里的联系方式样例整体替换为占位串。
+    """把自由文本里的联系方式样例整体替换为遮蔽串。
 
     匹配到的整段（含掩码片段）一次替换，避免留下 138**** 这类残段。
     """
@@ -29,7 +29,7 @@ def redact_text(text: str) -> str:
         return text
     cleaned = text
     for pattern in _PATTERNS:
-        cleaned = pattern.sub(PLACEHOLDER, cleaned)
+        cleaned = pattern.sub(MASK_TEXT, cleaned)
     return cleaned
 
 
@@ -44,3 +44,4 @@ def redact_deep(value, depth: int = 0):
     if isinstance(value, dict):
         return {key: redact_deep(item, depth + 1) for key, item in value.items()}
     return value
+

@@ -1,8 +1,8 @@
-"""显式登记表：路由模板 -> 用例标识。
+﻿"""显式登记表：路由模板 -> 用例标识。
 
 登记表是「接口已覆盖」的唯一凭据。原则：
 1. 手工维护是刻意的——故意不做自动生成，新增接口必须有人显式登记；
-2. 键是 FastAPI 的路由模板（带 /{param} 占位），不是具体 URL，
+2. 键是 FastAPI 的路由模板（带 /{param} 参数名），不是具体 URL，
    所以 /api/mini/events/{event_id} 与 /api/mini/events/evt-1001 会被当成同一条；
 3. 登记值是用例标识，报告里逐行打印，便于反查是哪条用例守的。
 """
@@ -62,3 +62,4 @@ def undeclared(found: set[str]) -> list[str]:
 def stale(found: set[str]) -> list[str]:
     """登记了但路由表里已经不存在的模板（已下线接口）。由测试显式告警，不参与失败判定。"""
     return sorted(registered_templates() - found)
+

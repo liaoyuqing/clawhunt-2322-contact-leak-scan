@@ -1,0 +1,241 @@
+{
+  "meta": {
+    "notice": "全部为虚构样例数据，仅用于回归测试：手机号使用 138/139/137/136 开头的示意号段，座机使用 021/0755/010 区号，邮箱统一 example.com 域名，微信号为 wxid_ 虚构串，QQ 为六位虚构号，不对应任何真实个人或企业。",
+    "org_name": "示例会员空间（虚构）",
+    "version": "2026.11"
+  },
+  "members": [
+    {
+      "member_id": "m-0001",
+      "display_name": "会员甲",
+      "org_name": "示例企业一（虚构）",
+      "tier": "gold",
+      "joined_at": "2025-03-11",
+      "mobile": "13800001111",
+      "landline": "021-12345678",
+      "email": "member.one@example.com",
+      "wxid": "wxid_abc123",
+      "qq": "100001"
+    },
+    {
+      "member_id": "m-0002",
+      "display_name": "会员乙",
+      "org_name": "示例企业二（虚构）",
+      "tier": "silver",
+      "joined_at": "2025-07-02",
+      "mobile": "13900002222",
+      "landline": "0755-87654321",
+      "email": "member.two@example.com",
+      "wxid": "wxid_def456",
+      "qq": "200002"
+    }
+  ],
+  "staff": [
+    {
+      "staff_id": "s-0001",
+      "display_name": "员工乙",
+      "shift": "早班",
+      "mobile": "13700003333",
+      "landline": "010-87654321",
+      "email": "staff.one@example.com",
+      "wxid": "wxid_staff01",
+      "qq": "300003"
+    },
+    {
+      "staff_id": "s-0002",
+      "display_name": "员工丙",
+      "shift": "晚班",
+      "mobile": "13600004444",
+      "landline": "010-65432109",
+      "email": "staff.two@example.com",
+      "wxid": "wxid_staff02",
+      "qq": "400004"
+    }
+  ],
+  "guests": [
+    {
+      "guest_id": "g-0001",
+      "display_name": "嘉宾丁",
+      "mobile": "13500005555",
+      "landline": "020-87654321",
+      "email": "guest.one@example.com",
+      "wxid": "wxid_guest01",
+      "qq": "500005"
+    },
+    {
+      "guest_id": "g-0002",
+      "display_name": "嘉宾戊",
+      "mobile": "13400006666",
+      "landline": "020-12345678",
+      "email": "guest.two@example.com",
+      "wxid": "wxid_guest02",
+      "qq": "600006"
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt-1001",
+      "slug": "autumn-meetup",
+      "title": "秋季资源对接会（虚构）",
+      "starts_at": "2026-12-05T09:30:00+08:00",
+      "venue_name": "示例厅 A",
+      "capacity": 60,
+      "host_org": "示例会员空间（虚构）",
+      "agenda": "上午：会员自我介绍与需求发布；下午：一对一资源对接。"
+    },
+    {
+      "event_id": "evt-1002",
+      "slug": "winter-salon",
+      "title": "冬季会员沙龙（虚构）",
+      "starts_at": "2026-12-19T14:00:00+08:00",
+      "venue_name": "示例厅 B",
+      "capacity": 30,
+      "host_org": "示例会员空间（虚构）",
+      "agenda": "圆桌讨论：跨行业资源互换的常见阻碍。"
+    }
+  ],
+  "signups": [
+    {
+      "signup_id": "sg-1001",
+      "event_id": "evt-1001",
+      "state": "confirmed",
+      "created_at": "2026-11-18T10:12:00+08:00",
+      "seat_no": "A-12",
+      "checked_in": false
+    },
+    {
+      "signup_id": "sg-1002",
+      "event_id": "evt-1002",
+      "state": "waitlist",
+      "created_at": "2026-11-19T16:40:00+08:00",
+      "seat_no": "B-03",
+      "checked_in": false
+    }
+  ],
+  "tickets": [
+    {
+      "ticket_key": "tk-1001",
+      "ticket_no": "2026112700001234",
+      "event_id": "evt-1001",
+      "state": "issued",
+      "issued_at": "2026-11-20T10:00:00+08:00",
+      "seat_zone": "A 区"
+    },
+    {
+      "ticket_key": "tk-1002",
+      "ticket_no": "2026112700005678",
+      "event_id": "evt-1002",
+      "state": "issued",
+      "issued_at": "2026-11-20T10:05:00+08:00",
+      "seat_zone": "B 区"
+    }
+  ],
+  "posts": [
+    {
+      "post_id": "p-1001",
+      "author_display_name": "会员甲",
+      "created_at": "2026-11-12T08:20:00+08:00",
+      "like_count": 12,
+      "comment_count": 3,
+      "body": "本周对接会已开放报名，名额有限。需要提前沟通的可以联系 13800001111，或发邮件到 member.one@example.com。"
+    },
+    {
+      "post_id": "p-1002",
+      "author_display_name": "会员乙",
+      "created_at": "2026-11-13T09:40:00+08:00",
+      "like_count": 5,
+      "comment_count": 1,
+      "body": "现场有座位表，找不到位置的可以打 0755-87654321，也可以加微信 wxid_def456。"
+    }
+  ],
+  "faq_answers": [
+    {
+      "faq_id": "faq-01",
+      "question": "报名后如何改签到其他场次？",
+      "answer": "在报名详情页选择改签，提交后由管家确认；如需协助可拨打 021-12345678。",
+      "updated_at": "2026-10-18T11:00:00+08:00"
+    },
+    {
+      "faq_id": "faq-02",
+      "question": "电子票可以转赠吗？",
+      "answer": "电子票支持转赠，转赠前请确认接收方已注册；转赠问题可发邮件到 staff.one@example.com。",
+      "updated_at": "2026-10-21T15:30:00+08:00"
+    }
+  ],
+  "staff_replies": [
+    {
+      "reply_id": "r-1001",
+      "case_id": "c-1001",
+      "staff_display_name": "员工乙",
+      "created_at": "2026-11-18T11:10:00+08:00",
+      "reply_body": "已为您改签到下一场，如需改回请联系 13900002222。"
+    },
+    {
+      "reply_id": "r-1002",
+      "case_id": "c-1002",
+      "staff_display_name": "员工丙",
+      "created_at": "2026-11-19T17:05:00+08:00",
+      "reply_body": "工单已受理，后续进展会在这里同步；也可加微信 wxid_staff01 跟进。"
+    }
+  ],
+  "support_cases": [
+    {
+      "case_id": "c-1001",
+      "subject": "改签申请（虚构）",
+      "state": "in_progress",
+      "updated_at": "2026-11-18T11:10:00+08:00",
+      "handler_display_name": "员工乙"
+    },
+    {
+      "case_id": "c-1002",
+      "subject": "电子票转赠咨询（虚构）",
+      "state": "open",
+      "updated_at": "2026-11-19T17:05:00+08:00",
+      "handler_display_name": "员工丙"
+    }
+  ],
+  "butler_tasks": [
+    {
+      "task_id": "t-1001",
+      "title": "对接会现场接待（虚构）",
+      "state": "scheduled",
+      "due_at": "2026-12-05T08:30:00+08:00"
+    },
+    {
+      "task_id": "t-1002",
+      "title": "沙龙物料确认（虚构）",
+      "state": "pending",
+      "due_at": "2026-12-18T18:00:00+08:00"
+    }
+  ],
+  "subscriptions": [
+    {
+      "template_id": "tmpl-activity",
+      "title": "活动开场提醒",
+      "scene": "activity_start",
+      "state": "accepted",
+      "enabled": true
+    },
+    {
+      "template_id": "tmpl-ticket",
+      "title": "电子票出票通知",
+      "scene": "ticket_issued",
+      "state": "accepted",
+      "enabled": true
+    }
+  ],
+  "questionnaires": [
+    {
+      "questionnaire_id": "q-1001",
+      "question_id": "qq-01",
+      "prompt": "本次活动的行业匹配度",
+      "answer_kind": "scale"
+    },
+    {
+      "questionnaire_id": "q-1001",
+      "question_id": "qq-02",
+      "prompt": "希望下次增加的主题",
+      "answer_kind": "text"
+    }
+  ]
+}

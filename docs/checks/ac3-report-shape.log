@@ -1,0 +1,52 @@
+﻿# AC3 演示：报告中每个接口都有会员身份与员工身份两行结果
+# 复现命令：python -m scripts.build_report  然后算 report.md 的结果行数
+
+===== 1) 重建报告 =====
+interfaces=28 rows=58 leaks=0 allowlisted=9
+written: E:\AI�ӵ�\Clawhunt\delivery\work\2322\repo\reports\report.md
+
+
+===== 2) 报告中结果行数统计（正则：结果表里以 | 开头的接口行） =====
+result_rows=58
+routes=28
+member_rows=29
+staff_rows=29
+
+===== 3) 逐接口核对：每个接口是否 member / staff 各一行 =====
+`/api/mini/butler/tasks` -> member,staff (rows=2)
+`/api/mini/butler/tasks/{task_id}` -> member,staff (rows=2)
+`/api/mini/events` -> member,staff (rows=2)
+`/api/mini/events/{event_id}` -> member,staff (rows=2)
+`/api/mini/events/{event_id}/agenda` -> member,staff (rows=2)
+`/api/mini/faq` -> member,staff (rows=2)
+`/api/mini/faq/{faq_id}` -> member,staff (rows=2)
+`/api/mini/me/profile` -> member,staff (rows=2)
+`/api/mini/me/questionnaires` -> member,staff (rows=2)
+`/api/mini/me/questionnaires/{questionnaire_id}` -> member,staff (rows=2)
+`/api/mini/posts` -> member,staff (rows=2)
+`/api/mini/posts/{post_id}` -> member,staff (rows=2)
+`/api/mini/privacy/deletion` -> member,staff (rows=2)
+`/api/mini/privacy/export` -> member,staff (rows=2)
+`/api/mini/privacy/policy` -> member,staff (rows=2)
+`/api/mini/signups` -> member,member,staff,staff (rows=4)
+`/api/mini/signups/{signup_id}` -> member,staff (rows=2)
+`/api/mini/staff/cases` -> member,staff (rows=2)
+`/api/mini/staff/profile` -> member,staff (rows=2)
+`/api/mini/staff/shifts` -> member,staff (rows=2)
+`/api/mini/subscriptions` -> member,staff (rows=2)
+`/api/mini/subscriptions/{template_id}/toggle` -> member,staff (rows=2)
+`/api/mini/support/cases` -> member,staff (rows=2)
+`/api/mini/support/cases/{case_id}` -> member,staff (rows=2)
+`/api/mini/support/handoff` -> member,staff (rows=2)
+`/api/mini/support/tickets` -> member,staff (rows=2)
+`/api/mini/tickets` -> member,staff (rows=2)
+`/api/mini/tickets/{ticket_key}` -> member,staff (rows=2)
+
+===== 4) 身份受限接口仍保留两行（NOT_ALLOWED 不省略） =====
+列含义：接口 = FastAPI 路由模板；身份 = member / staff；结果 = PASS / LEAK / NOT_ALLOWED / EMPTY_BODY；命中字段路径 = JSON 路径，PASS 时为 -。
+| `/api/mini/me/profile` | GET | staff | NOT_ALLOWED | `-` |
+| `/api/mini/privacy/deletion` | POST | staff | NOT_ALLOWED | `-` |
+| `/api/mini/staff/cases` | GET | member | NOT_ALLOWED | `-` |
+| `/api/mini/staff/profile` | GET | member | NOT_ALLOWED | `-` |
+| `/api/mini/staff/shifts` | GET | member | NOT_ALLOWED | `-` |
+

@@ -19,6 +19,7 @@ CHECKS = ROOT / "docs" / "checks"
 REPORT = ROOT / "reports" / "report.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "leak-scan.yml"
 
+ALLOW_ENV = "LEAK_DEMO_ALLOW"
 EXTRA_ROUTE_ENV = "LEAK_DEMO_EXTRA_ROUTE"
 LEAK_ENV = "LEAK_DEMO_LEAK"
 PROBE_ROUTE = "/api/mini/events/__leak_probe"
@@ -28,6 +29,10 @@ GUARD_CASE = "tests/test_api_surface.py::test_every_template_is_registered"
 
 
 def run(args: list[str]) -> tuple[int, str]:
+    env = dict(os.environ)
+    # 子进程输出一律按 UTF-8 出来，否则中文注释在日志里会被本地代码页截坏。
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
     completed = subprocess.run(
         [sys.executable, *args],
         cwd=str(ROOT),
@@ -35,6 +40,7 @@ def run(args: list[str]) -> tuple[int, str]:
         text=True,
         encoding="utf-8",
         errors="replace",
+        env=env,
     );
     combined = (completed.stdout or "") + (completed.stderr or "");
     return completed.returncode, combined.rstrip()
@@ -56,20 +62,25 @@ def report_rows() -> list[str]:
 def capture_ac1() -> list[str]:
     out = [
         "# AC1 演示：人为新增一个未登记用例的接口，登记比对与 pytest 守卫必须失败",
-        "# 全程只设一个环境变量，不改任何源码；清掉变量即恢复基线。",
+        "# 全程只设环境变量，不改任何源码；清掉变量即恢复基线。",
+        "# 演示开关有两道闸：必须同时设 LEAK_DEMO_ALLOW=1，且不在 CI 环境里。",
         "# 复现命令（PowerShell）：",
+        "#   $" + "env:LEAK_DEMO_ALLOW = " + chr(34) + "1" + chr(34),
         "#   $" + "env:LEAK_DEMO_EXTRA_ROUTE = " + chr(34) + PROBE_ROUTE + chr(34),
         "#   python -m scripts.check_registry",
         "#   python -m pytest " + GUARD_CASE + " -q",
         "#   Remove-Item Env:LEAK_DEMO_EXTRA_ROUTE",
+        "#   Remove-Item Env:LEAK_DEMO_ALLOW",
         "",
     ]
+    os.environ[ALLOW_ENV] = "1"
     os.environ[EXTRA_ROUTE_ENV] = PROBE_ROUTE
     try:
         code_a, text_a = run(["-m", "scripts.check_registry"])
         code_b, text_b = run(["-m", "pytest", GUARD_CASE, "-q"])
     finally:
         os.environ.pop(EXTRA_ROUTE_ENV, None)
+        os.environ.pop(ALLOW_ENV, None)
     code_c, text_c = run(["-m", "pytest", GUARD_CASE, "-q"])
     out += ["===== 1) 注入后 python -m scripts.check_registry =====", text_a, "EXIT_CODE=" + str(code_a), ""]
     out += ["===== 2) 注入后 pytest 守卫用例（应失败） =====", text_b, "EXIT_CODE=" + str(code_b), ""]
@@ -81,13 +92,17 @@ def capture_ac2() -> list[str]:
     out = [
         "# AC2 演示：人为让 " + LEAK_ROUTE + " 返回虚构手机号 13800138000，扫描必须失败",
         "# 失败文本里必须同时出现接口路径（path=）与字段路径（field=）。",
+        "# 同样受两道闸约束：需 LEAK_DEMO_ALLOW=1，且 CI 环境下不生效。",
         "# 复现命令（PowerShell）：",
+        "#   $" + "env:LEAK_DEMO_ALLOW = " + chr(34) + "1" + chr(34),
         "#   $" + "env:LEAK_DEMO_LEAK = " + chr(34) + LEAK_ROUTE + chr(34),
         "#   python -m pytest " + LEAK_CASE + " -q",
         "#   python -m scripts.build_report",
         "#   Remove-Item Env:LEAK_DEMO_LEAK",
+        "#   Remove-Item Env:LEAK_DEMO_ALLOW",
         "",
     ]
+    os.environ[ALLOW_ENV] = "1"
     os.environ[LEAK_ENV] = LEAK_ROUTE
     try:
         code_a, text_a = run(["-m", "pytest", LEAK_CASE, "-q"])
@@ -95,6 +110,7 @@ def capture_ac2() -> list[str]:
         leak_lines = [line for line in report_rows() if "LEAK" in line]
     finally:
         os.environ.pop(LEAK_ENV, None)
+        os.environ.pop(ALLOW_ENV, None)
     code_c, text_c = run(["-m", "pytest", LEAK_CASE, "-q"])
     code_d, text_d = run(["-m", "scripts.build_report"])
     out += ["===== 1) 注入后跑目标接口（应失败） =====", text_a, "EXIT_CODE=" + str(code_a), ""]
@@ -158,12 +174,14 @@ def capture_ac4() -> list[str]:
         "",
         "===== 3) 模拟 CI 步骤：注入一条泄露后跑同一命令，退出码必须非 0 =====",
     ]
+    os.environ[ALLOW_ENV] = "1"
     os.environ[LEAK_ENV] = LEAK_ROUTE
     try:
         code_a, text_a = run(["-m", "scripts.check_registry"])
         code_b, text_b = run(["-m", "pytest", "tests/", "-q"])
     finally:
         os.environ.pop(LEAK_ENV, None)
+        os.environ.pop(ALLOW_ENV, None)
     tail = text_b.splitlines()[-4:]
     out += ["check_registry_exit=" + str(code_a), *tail, "pytest_exit=" + str(code_b)]
     out.append("=> step 失败 -> job leak-scan 失败 -> PR 必过检查不满足，合并按钮禁用")
@@ -194,4 +212,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
